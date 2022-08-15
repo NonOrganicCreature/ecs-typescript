@@ -1,20 +1,31 @@
 {
-  "name": "ecs-test",
+  "name": "ecs-typescript-framework",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/ecs.umd.js",
+  "module": "./dist/ecs.js",
+  "exports": {
+    ".": {
+      "import": "./dist/ecs.js",
+      "require": "./dist/ecs.umd.js"
+    }
+  },
   "scripts": {
-    "dev": "vitest && vite",
-    "build": "vitest && tsc && vite build",
+    "dev": "vite",
+    "test": "vitest",
+    "build": "vitest run && tsc && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
     "happy-dom": "^6.0.4",
     "typescript": "^4.6.4",
     "vite": "^3.0.0",
+    "vite-plugin-dts": "^1.4.1",
     "vitest": "^0.21.0"
   },
-  "dependencies": {
-    "madge": "^5.0.1"
-  }
+  "dependencies": {}
 }

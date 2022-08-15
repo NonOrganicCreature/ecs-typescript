@@ -1,8 +1,16 @@
-import { TComponent } from "../component";
-import { TEntity } from "../entity";
-import { TSystemCreationParams, TSystems } from "../system";
+import { TComponent } from "@/lib/component";
+import { TEntity } from "@/lib/entity";
+import { TSystemCreationParams, TSystems } from "@/lib/system";
+import {
+  addEntityComponentInternal,
+  addEntityInternal,
+  addSystemInternal,
+  getEntityComponentInternal,
+  removeEntityComponentInternal,
+  removeEntityInternal,
+  runInternal
+} from "./world-api-internal";
 
-type TEntityComponents = Map<TEntity, Array<TComponent>>;
 
 export declare type ECSWorld = {
   addSystem: (system: TSystemCreationParams) => void;
@@ -20,89 +28,53 @@ export declare type ECSWorld = {
   removeEntity: (entity: TEntity) => TEntity;
 };
 
+export declare type TEntityComponents = Map<TEntity, Array<TComponent>>;
+
+export declare type ECSWorldInternalState = {
+  currentEntityId: TEntity;
+  systems: TSystems;
+  entities: TEntityComponents;
+};
+
 export const createWorld = (): ECSWorld => {
-  const entities: TEntityComponents = new Map();
-  const systems: TSystems = [];
-  let currentEntityId: TEntity = 0;
+  const state: ECSWorldInternalState = {
+    currentEntityId: 0,
+    systems: [],
+    entities: new Map()
+  };
 
   const removeEntity = (entity: TEntity) => {
-    entities.delete(entity);
-    return entity;
+    return removeEntityInternal(state, entity);
   };
 
   const addEntityComponent = (entity: TEntity, component: TComponent) => {
-    const entityComponents = entities.get(entity);
-
-    if (entityComponents) {
-      entityComponents.push(component);
-    }
+    addEntityComponentInternal(state, entity, component);
   };
 
   const removeEntityComponent = (
     entity: TEntity,
     componentClassRef: new (...args: any[]) => any
   ) => {
-    const entityComponents = entities.get(entity);
-
-    if (entityComponents) {
-      const excludedComponent: Array<TComponent> = entityComponents.filter(
-        (entityComponent) => !(entityComponent instanceof componentClassRef)
-      );
-      entities.set(entity, excludedComponent);
-    }
+    removeEntityComponentInternal(state, entity, componentClassRef);
   };
 
   const getEntityComponent = <T extends TComponent>(
     entity: TEntity,
     componentClassRef: new (...args: any[]) => T
   ): T | undefined => {
-    const components = entities.get(entity);
-    if (components) {
-      for (let c of components) {
-        if (c instanceof componentClassRef) {
-          return c as T;
-        }
-      }
-    }
-
-    return undefined;
+    return getEntityComponentInternal(state, entity, componentClassRef);
   };
 
   const addSystem = (system: TSystemCreationParams) => {
-    systems.push({
-      requiredComponents: system.requiredComponents,
-      run: (entity: TEntity) => {
-        const entityComponents = entities.get(entity);
-        if (entityComponents && system.requiredComponents.length > 0) {
-          for (const requiredComponent of system.requiredComponents) {
-            if (
-              !entityComponents.some(
-                (entityComponent) =>
-                  entityComponent instanceof requiredComponent
-              )
-            ) {
-              return;
-            }
-          }
-        }
-
-        system.run(entity, ecsWorldRef);
-      }
-    });
+    addSystemInternal(system, state, ecsWorldRef);
   };
 
   const addEntity = (components: Array<TComponent>) => {
-    entities.set(currentEntityId, components);
-
-    return currentEntityId++;
+    return addEntityInternal(components, state);
   };
 
   const run = () => {
-    for (const [e, _] of entities) {
-      for (const system of systems) {
-        system.run(e);
-      }
-    }
+    runInternal(state);
     window.requestAnimationFrame(run);
   };
 

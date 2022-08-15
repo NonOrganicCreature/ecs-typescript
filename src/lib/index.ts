@@ -1,3 +1,1 @@
-import { createWorld } from "./world";
-
-export { createWorld };
+export { createWorld } from "./world";

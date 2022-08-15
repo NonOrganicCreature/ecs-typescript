@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
-import { createWorld } from "../lib";
+import { createWorld } from "@/lib";
 import { JumpComponent } from "./test-components";
-import { TSystemCreationParams } from "../lib/system";
+import { TSystemCreationParams } from "@/lib/system";
 
 describe("ECS world created", () => {
   test("Instance created", () => {
@@ -32,7 +32,7 @@ describe("ECS world created", () => {
     const w = createWorld();
     const emptyRequiredComponentsSystem: TSystemCreationParams = {
       requiredComponents: [],
-      run: (e, ecsRef) => {}
+      run: () => {}
     };
 
     const emptyRequiredComponentsSystemSpy = vi.spyOn(
@@ -48,11 +48,12 @@ describe("ECS world created", () => {
   });
 
   test("Required component system has been added and has not been called due no components on entity presented", () => {
-    const jumpComponent = new JumpComponent();
     const w = createWorld();
     const emptyRequiredComponentsSystem: TSystemCreationParams = {
       requiredComponents: [JumpComponent],
-      run: (e, ecsRef) => {}
+      run: () => {
+        
+      }
     };
 
     const emptyRequiredComponentsSystemSpy = vi.spyOn(
@@ -72,7 +73,7 @@ describe("ECS world created", () => {
     const w = createWorld();
     const requiredComponentsSystem: TSystemCreationParams = {
       requiredComponents: [JumpComponent],
-      run: (e, ecsRef) => {}
+      run: () => {}
     };
 
     const requiredComponentsSystemSpy = vi.spyOn(

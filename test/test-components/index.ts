@@ -1,5 +1,4 @@
-import { TComponent } from "../../lib/component";
-
+import { TComponent } from "@/lib/component";
 type JumpComponentFields = {
   jumpHeight: number;
 };
