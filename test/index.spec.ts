@@ -24,7 +24,6 @@ describe("ECS world created", () => {
     const w = createWorld();
     const entityId = w.addEntity([]);
     const removedEntityId = w.removeEntity(entityId);
-
     expect(entityId).toBe(removedEntityId);
   });
 
@@ -55,7 +54,6 @@ describe("ECS world created", () => {
         
       }
     };
-
     const emptyRequiredComponentsSystemSpy = vi.spyOn(
       emptyRequiredComponentsSystem,
       "run"
