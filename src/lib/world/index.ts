@@ -16,9 +16,9 @@ export declare type ECSWorld = {
   addSystem: (system: TSystemCreationParams) => void;
   addEntity: (components: Array<TComponent>) => TEntity;
   addEntityComponent: (entity: TEntity, component: TComponent) => void;
-  removeEntityComponent: (
+  removeEntityComponent: <T extends TComponent>(
     entity: TEntity,
-    componentClassRef: new (...args: any[]) => any
+    componentClassRef: new (...args: any[]) => T
   ) => void;
   getEntityComponent: <T extends TComponent>(
     entity: TEntity,
